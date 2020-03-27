@@ -27,10 +27,17 @@ export default function PpeCalc() {
 
 		// Model demand curve, initial values based on trial-and-error
 		// via https://cubic-bezier.com/#.17,.67,.55,.97
-		curveA: .17,
-		curveB: .67,
-		curveC: .55,
-		curveD: .97,
+		// curveA: .17,
+		// curveB: .67,
+		// curveC: .55,
+		// curveD: .97,
+
+		// NB curves disabled for demo and UI hidden (below)
+		// - JB 20200327
+		curveA: 0,
+		curveB: 0,
+		curveC: 0,
+		curveD: 0,
 	});
 
 	const [ showAssumptions, setShowAssumptions ] = React.useState(false)
@@ -69,7 +76,7 @@ export default function PpeCalc() {
 			inputs.numChws *
 			ppeCostPerChwPerMonth;
 
-		// Collect for possible display later
+		// Collect for display later if desired
 		output.vars = {
 			hhPerChw,
 			hhPerChwPerMonth,
@@ -79,17 +86,17 @@ export default function PpeCalc() {
 			totalPpeCostPerMonth
 		};
 
+		// Utilities to prep data below
 		const tidy = num => numberWithCommas(Math.round(num));
 		const round2digits = num => Math.round((num + Number.EPSILON) * 100) / 100;
+		const sum = (list, key) => list.reduce((sum, val) => sum += val[key], 0);
 
-		// Make numbers nice if we need to display
+		// Make variables nice if we need to display
 		Object.keys(output.vars).forEach(key => {
 			output.vars[key] = round2digits(output.vars[key])
 		})
 
-		// Build table 
-		output.list = [];
-
+		// If all control points are xero, disable spline
 		const enableSpline = [
 			inputs.curveA,
 			inputs.curveB,
@@ -97,6 +104,7 @@ export default function PpeCalc() {
 			inputs.curveD,
 		].find(x => x > 0);
 
+		// Create a cubic sline curve to model demand rise and falloff
 		const spline = new KeySpline(
 			inputs.curveA,
 			inputs.curveB,
@@ -104,25 +112,40 @@ export default function PpeCalc() {
 			inputs.curveD,
 		);
 
-		const sum = (list, key) => list.reduce((sum, val) => sum += val[key], 0);
+		// Build table 
+		output.list = [];
 
+		// Forcast demand for each month range
+		// E.g. if crisis lasts `month` months, then how much total PPE will we need, etc
 		timeRange.forEach(month => {
+
+			// Since the curve models rise-and-fall over a given time range,
+			// we calculate the unique demand fo reach month.
+			// So if "month" from the timeRange is 3,
+			// we calculate demand at month 1, month 2, and month 3,
+			// put it in an array, then sum it up (below)
 			const months = new Array(month)
 				.fill()
 				.map((unused, num) => {
+					// Add 1 because first index is 0
 					num = num + 1;
-					const demandModelingValue = enableSpline ? Math.max(1, .5 + spline.get(num / 6)) : 1;
+
+					// Get our curve value (if enabled)
+					const demandModelingValue = enableSpline ? 
+						Math.max(1, 
+							.5 + spline.get(num / month)
+						) : 1;
+
+					// Calculate the markers using the demand curve and base values from above
 					return {
-						num,
-						demandModelingValue: demandModelingValue,
+						demandModelingValue,
 						ppeNeeded:  num * demandModelingValue * totalPpeNeededPerMonth,
 						ppeCost:    num * demandModelingValue * totalPpeCostPerMonth,
 						kitsPerChw: num * demandModelingValue * ppeNeededPerChwPerMonth,
 					}
 				});
-			console.log(months);
 			
-			
+			// Now, take the values calcd above for each month and sum it up
 			output.list.push({
 				month,
 				demandModelingValue: round2digits(sum(months, 'demandModelingValue')),
@@ -133,7 +156,6 @@ export default function PpeCalc() {
 		})
 
 		setModelOutput(output);
-		console.log("New output:", output);
 	};
 
 	const updateModelField = (field, value) => {
@@ -141,8 +163,8 @@ export default function PpeCalc() {
 		if(!isNaN(value)) {
 			const inputs = { ...modelInputs, [field]: value };
 			setModelInputs(inputs);
-			console.log("Updated inputs:", inputs);
-
+			
+			// Pass inputs directly because setModelInputs() is not sync
 			updateModelOutput(inputs);
 		}
 	}
@@ -212,7 +234,7 @@ export default function PpeCalc() {
 							onChange={evt => updateModelField('extraKitMultiplier', evt.target.value)}
 						/>
 
-						<TextField
+						{/* <TextField
 							required
 							label="Demand Curve Control A"
 							defaultValue={modelInputs.curveA}
@@ -240,7 +262,7 @@ export default function PpeCalc() {
 							onChange={evt => updateModelField('curveD', evt.target.value)}
 						/>
 						
-						<p className={styles.hint}>Use this tool to generate demand control curve points: <a href='https://cubic-bezier.com/#.17,.67,.55,.97' target='_new'>https://cubic-bezier.com/#.17,.67,.55,.97</a></p>
+						<p className={styles.hint}>Use this tool to generate demand control curve points: <a href='https://cubic-bezier.com/#.17,.67,.55,.97' target='_new'>https://cubic-bezier.com/#.17,.67,.55,.97</a></p> */}
 					</div>
 				:""}
 				
