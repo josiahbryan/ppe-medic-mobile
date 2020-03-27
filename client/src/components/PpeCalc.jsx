@@ -42,7 +42,8 @@ export default function PpeCalc() {
 			inputs = modelInputs;
 		}
 		const output = {};
-		const timeRange = [ 1, 3, 6, 9, 12 ];
+		// const timeRange = [ 1, 3, 6, 9, 12 ];
+		const timeRangeWeeks = [ 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52 ];
 		
 		const hhPerChw =
 			inputs.numHouseholds /
@@ -105,30 +106,34 @@ export default function PpeCalc() {
 		);
 
 		const sum = (list, key) => list.reduce((sum, val) => sum += val[key], 0);
+		
+		const weeksPerMonth = 4;
 
-		timeRange.forEach(month => {
-			const months = new Array(month)
+		timeRangeWeeks.forEach(numWeeks => {
+			const weeks = new Array(numWeeks)
 				.fill()
 				.map((unused, num) => {
 					num = num + 1;
-					const demandModelingValue = enableSpline ? Math.max(1, .5 + spline.get(num / 6)) : 1;
+					const demandModelingValue = enableSpline ? 
+						Math.max(1, .5 + spline.get(num / (52/2)))
+						: 1;
 					return {
 						num,
 						demandModelingValue: demandModelingValue,
-						ppeNeeded:  num * demandModelingValue * totalPpeNeededPerMonth,
-						ppeCost:    num * demandModelingValue * totalPpeCostPerMonth,
-						kitsPerChw: num * demandModelingValue * ppeNeededPerChwPerMonth,
+						ppeNeeded:  num * demandModelingValue * (totalPpeNeededPerMonth  / weeksPerMonth),
+						ppeCost:    num * demandModelingValue * (totalPpeCostPerMonth    / weeksPerMonth),
+						kitsPerChw: num * demandModelingValue * (ppeNeededPerChwPerMonth / weeksPerMonth),
 					}
 				});
-			console.log(months);
+			console.log(weeks);
 			
 			
 			output.list.push({
-				month,
-				demandModelingValue: round2digits(sum(months, 'demandModelingValue')),
-				ppeNeeded:  tidy(sum(months, 'ppeNeeded')),
-				ppeCost:    tidy(sum(months, 'ppeCost')),
-				kitsPerChw: tidy(sum(months, 'kitsPerChw')),
+				numWeeks,
+				demandModelingValue: round2digits(sum(weeks, 'demandModelingValue')),
+				ppeNeeded:  tidy(sum(weeks, 'ppeNeeded')),
+				ppeCost:    tidy(sum(weeks, 'ppeCost')),
+				kitsPerChw: tidy(sum(weeks, 'kitsPerChw')),
 			});
 		})
 
@@ -267,9 +272,9 @@ export default function PpeCalc() {
 								<td className={styles.key}>
 									Estimated Duration of Outbreak
 								</td>
-								{modelOutput.list.map(({ month }) =>
-									<td key={month}>
-										{month} mo
+								{modelOutput.list.map(({ numWeeks }) =>
+									<td key={numWeeks}>
+										{numWeeks} wks
 									</td>
 								)}
 							</tr>
@@ -279,8 +284,8 @@ export default function PpeCalc() {
 								<td className={styles.key}>
 									Kits Needed
 								</td>
-								{modelOutput.list.map(({ month, ppeNeeded }) =>
-									<td key={month}>
+								{modelOutput.list.map(({ numWeeks, ppeNeeded }) =>
+									<td key={numWeeks}>
 										{ppeNeeded}
 									</td>
 								)}
@@ -289,8 +294,8 @@ export default function PpeCalc() {
 								<td className={styles.key}>
 									Total Cost for Kits
 								</td>
-								{modelOutput.list.map(({ month, ppeCost }) =>
-									<td key={month}>
+								{modelOutput.list.map(({ numWeeks, ppeCost }) =>
+									<td key={numWeeks}>
 										${ppeCost}
 									</td>
 								)}
@@ -299,8 +304,8 @@ export default function PpeCalc() {
 								<td className={styles.key}>
 									Avg Kits per CHW
 								</td>
-								{modelOutput.list.map(({ month, kitsPerChw }) =>
-									<td key={month}>
+								{modelOutput.list.map(({ numWeeks, kitsPerChw }) =>
+									<td key={numWeeks}>
 										{kitsPerChw}
 									</td>
 								)}
@@ -309,8 +314,8 @@ export default function PpeCalc() {
 								<td className={styles.key}>
 								demandModelingValue
 								</td>
-								{modelOutput.list.map(({ month, demandModelingValue }) =>
-									<td key={month}>
+								{modelOutput.list.map(({ numWeeks, demandModelingValue }) =>
+									<td key={numWeeks}>
 										{demandModelingValue}
 									</td>
 								)}
