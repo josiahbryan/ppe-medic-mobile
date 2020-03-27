@@ -9,6 +9,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
 import KeySpline from '../utils/spline';
+import gtag from '../utils/GoogleAnalytics';
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -156,6 +157,12 @@ export default function PpeCalc() {
 		})
 
 		setModelOutput(output);
+
+		// Debounce analytics so we don't track every keystroke, just overall changes
+		clearTimeout(setModelOutput.tid);
+		setModelOutput.tid = setTimeout(() => {
+			gtag('event', 'calculation');
+		}, 5000);
 	};
 
 	const updateModelField = (field, value) => {
@@ -183,6 +190,8 @@ export default function PpeCalc() {
 				<TextField
 					required
 					label="Number of CHWs (total)"
+					type="number"
+					step="any"
 					defaultValue={modelInputs.numChws}
 					onChange={evt => updateModelField('numChws', evt.target.value)}
 				/>
@@ -190,12 +199,15 @@ export default function PpeCalc() {
 				<TextField
 					required
 					label="Households (total)"
+					type="number"
+					step="any"
 					defaultValue={modelInputs.numHouseholds}
 					onChange={evt => updateModelField('numHouseholds', evt.target.value)}
 				/>
 
 				<TextField
 					label="Avg HHs per CHW"
+					step="any"
 					value={modelOutput.vars.hhPerChw}
 					disabled
 				/>
@@ -209,6 +221,8 @@ export default function PpeCalc() {
 						<TextField
 							required
 							label="Physical Households Visits Per CHW Per Month"
+							type="number"
+							step="any"
 							defaultValue={modelInputs.hhVisitsPerChwPerMonth}
 							onChange={evt => updateModelField('hhVisitsPerChwPerMonth', evt.target.value)}
 						/>
@@ -216,6 +230,8 @@ export default function PpeCalc() {
 						<TextField
 							required
 							label="Number of Times PPE Can be Used"
+							type="number"
+							step="any"
 							defaultValue={modelInputs.ppeUsageTimes}
 							onChange={evt => updateModelField('ppeUsageTimes', evt.target.value)}
 						/>
@@ -223,6 +239,8 @@ export default function PpeCalc() {
 						<TextField
 							required
 							label="Cost per PPE in USD ($)"
+							type="number"
+							step="any"
 							defaultValue={modelInputs.costPerPpe}
 							onChange={evt => updateModelField('costPerPpe', evt.target.value)}
 						/>
@@ -230,6 +248,8 @@ export default function PpeCalc() {
 						<TextField
 							required
 							label="Extra Kit Multiplier for Redundancy"
+							type="number"
+							step="any"
 							defaultValue={modelInputs.extraKitMultiplier}
 							onChange={evt => updateModelField('extraKitMultiplier', evt.target.value)}
 						/>
