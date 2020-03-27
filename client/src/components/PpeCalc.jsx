@@ -35,7 +35,7 @@ export default function PpeCalc() {
 
 	const [ showAssumptions, setShowAssumptions ] = React.useState(false)
 
-	const [ modelOutput, setModelOutput ] = React.useState({ list: [] })
+	const [ modelOutput, setModelOutput ] = React.useState({ list: [], vars: { hhPerChw: 0 } })
 
 	const updateModelOutput = (inputs) => {
 		if(!inputs) {
@@ -172,6 +172,12 @@ export default function PpeCalc() {
 					onChange={evt => updateModelField('numHouseholds', evt.target.value)}
 				/>
 
+				<TextField
+					label="Avg HHs per CHW"
+					defaultValue={modelOutput.vars.hhPerChw}
+					disabled
+				/>
+
 				{showAssumptions ?
 					<div className={styles.assumptions}>
 						<Typography className={styles.title} color="textSecondary">
@@ -259,7 +265,7 @@ export default function PpeCalc() {
 						<thead>
 							<tr>
 								<td className={styles.key}>
-									Time Range
+									Estimated Duration of Outbreak
 								</td>
 								{modelOutput.list.map(({ month }) =>
 									<td key={month}>
