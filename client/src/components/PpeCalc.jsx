@@ -102,12 +102,12 @@ export default function PpeCalc() {
 					onChange={evt => updateModelField('numChws', evt.target.value)}
 				/>
 
-				{/* <TextField
+				<TextField
 					required
 					label="Households (total)"
 					defaultValue={modelInputs.numHouseholds}
 					onChange={evt => updateModelField('numHouseholds', evt.target.value)}
-				/> */}
+				/>
 
 				<TextField
 					required
