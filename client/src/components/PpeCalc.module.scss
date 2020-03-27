@@ -1,0 +1,62 @@
+.root {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	padding: 2rem;
+
+	// :global(.MuiCard-root) {
+	.inputCard, .outputCard {
+		width: 100%;
+		max-width: calc(100% - 10rem);
+		min-width: 300px;
+		
+		.title {
+			margin: .25rem 0 1rem;
+			font-weight: bold;
+			color: black;
+		}
+
+		:global(.MuiFormControl-root) {
+			width: 100%;
+			margin-top: .75rem;
+		}
+
+		.assumptions {
+			.title {
+				margin: 1.5rem 0 0;
+			}
+		}
+	}
+
+	.outputCard {
+		margin-top: 1rem;
+
+		.wrap {
+			width: 100%;
+			overflow: auto;
+
+			table {
+				thead {
+					td {
+						font-weight: bold;
+						background: #ccc;
+					}
+				}
+				tbody {
+					td.key {
+						font-weight: bold;
+						background: #ccc;
+					}
+				}
+
+				td {
+					text-align: right;
+					padding: 2px 4px;
+				}
+			}
+		}
+		
+	}
+}
