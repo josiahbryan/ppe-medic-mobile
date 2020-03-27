@@ -16,8 +16,8 @@
     "react-scripts": "3.4.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "git rev-parse --short HEAD > public/version.txt && echo \"{\\\"date\\\":\\\"`date`\\\"}\" > src/utils/build-time.json && cross-env REACT_APP_GIT_REV=`git rev-parse --short HEAD` react-scripts start",
+    "build": "git rev-parse --short HEAD > public/version.txt && echo \"{\\\"date\\\":\\\"`date`\\\"}\" > src/utils/build-time.json && cross-env REACT_APP_GIT_REV=`git rev-parse --short HEAD` NODE_ENV=production node bootloader/build.js && cross-env REACT_APP_GIT_REV=`git rev-parse --short HEAD` react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -35,5 +35,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2"
   }
 }
