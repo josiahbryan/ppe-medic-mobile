@@ -126,8 +126,8 @@ export default function PpeCalc() {
 			output.list.push({
 				month,
 				demandModelingValue: round2digits(sum(months, 'demandModelingValue')),
-				ppeNeeded:  tidy(sum(months, 'demandModelingValue')),
-				ppeCost:    tidy(sum(months, 'demandModelingValue')),
+				ppeNeeded:  tidy(sum(months, 'ppeNeeded')),
+				ppeCost:    tidy(sum(months, 'ppeCost')),
 				kitsPerChw: tidy(sum(months, 'kitsPerChw')),
 			});
 		})
