@@ -4,12 +4,12 @@
 	justify-content: center;
 	align-items: center;
 
-	padding: 2rem;
+	width: 100%;
 
 	// :global(.MuiCard-root) {
 	.inputCard, .outputCard {
 		width: 100%;
-		max-width: calc(100% - 10rem);
+		max-width: 400px;
 		min-width: 300px;
 		
 		.title {
@@ -32,6 +32,14 @@
 
 	.outputCard {
 		margin-top: 1rem;
+
+		max-width: 800px;
+
+		// display: flex;
+		// flex-direction: row;
+		// justify-content: center;
+		// align-items: center;
+		
 
 		.wrap {
 			width: 100%;

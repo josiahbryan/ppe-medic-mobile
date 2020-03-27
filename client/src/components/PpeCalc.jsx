@@ -29,7 +29,10 @@ export default function PpeCalc() {
 
 	const [ modelOutput, setModelOutput ] = React.useState({ list: [] })
 
-	const updateModelOutput = () => {
+	const updateModelOutput = (inputs) => {
+		if(!inputs) {
+			inputs = modelInputs;
+		}
 		const output = {};
 		const timeRange = [ 1, 3, 6, 9, 12 ];
 
@@ -37,23 +40,23 @@ export default function PpeCalc() {
 		// output.vars = {};
 
 		const hhPerChwPerMonth = 
-			modelInputs.hhPerChw * 
-			modelInputs.hhVisitsPerChwPerMonth;
+			inputs.hhPerChw * 
+			inputs.hhVisitsPerChwPerMonth;
 		
 		const ppeNeededPerChwPerMonth = 
 			hhPerChwPerMonth / 
-			modelInputs.ppeUsageTimes;
+			inputs.ppeUsageTimes;
 
 		const ppeCostPerChwPerMonth = 
 			ppeNeededPerChwPerMonth *
-			modelInputs.costPerPpe;
+			inputs.costPerPpe;
 
 		const totalPpeNeededPerMonth = 
-			modelInputs.numChws *
+			inputs.numChws *
 			ppeNeededPerChwPerMonth;
 
 		const totalPpeCostPerMonth = 
-			modelInputs.numChws *
+			inputs.numChws *
 			ppeCostPerChwPerMonth;
 
 		const tidy = num => numberWithCommas(Math.round(num));
@@ -77,7 +80,7 @@ export default function PpeCalc() {
 			setModelInputs(inputs);
 			console.log("Updated inputs:", inputs);
 
-			updateModelOutput();
+			updateModelOutput(inputs);
 		}
 	}
 
@@ -99,12 +102,12 @@ export default function PpeCalc() {
 					onChange={evt => updateModelField('numChws', evt.target.value)}
 				/>
 
-				<TextField
+				{/* <TextField
 					required
 					label="Households (total)"
 					defaultValue={modelInputs.numHouseholds}
 					onChange={evt => updateModelField('numHouseholds', evt.target.value)}
-				/>
+				/> */}
 
 				<TextField
 					required
